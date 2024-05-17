@@ -1,6 +1,8 @@
 pipeline
 {
-  agent any
+  agent {
+    label 'agent_java'
+  }
   tools
   {
     maven 'maven 3.9.6'
