@@ -46,35 +46,35 @@ pipeline
     {
       steps
       {
-        deploy adapters: [tomcat9(credentialsId: 'tomcat-credentials', path: '', url: 'http://18.212.56.107:8080/')], contextPath: null, war: 'target/*war'
+        deploy adapters: [tomcat9(credentialsId: 'tomcat-credentials', path: '', url: 'http://10.0.15.44:8080/')], contextPath: null, war: 'target/*war'
       }
     }
   }
-  post
-  {
-    always
-    {
-      emailext body: '''
-      Please check build status.
+  // post
+  // {
+  //   always
+  //   {
+  //     emailext body: '''
+  //     Please check build status.
 
-      Thanks
-      Samuel''', recipientProviders: [buildUser(), developers()], subject: 'success', to: 'samueloluwade.devops@gmail.com'
-    }
-    success
-    {
-      emailext body: '''
-      Successful build.
+  //     Thanks
+  //     Samuel''', recipientProviders: [buildUser(), developers()], subject: 'success', to: 'samueloluwade.devops@gmail.com'
+  //   }
+  //   success
+  //   {
+  //     emailext body: '''
+  //     Successful build.
 
-      Thanks
-      Samuel''', recipientProviders: [buildUser(), developers()], subject: 'success', to: 'samueloluwade.devops@gmail.com'
-    }
-    failure
-    {
-      emailext body: '''
-      Build failed. Please resolve issues.
+  //     Thanks
+  //     Samuel''', recipientProviders: [buildUser(), developers()], subject: 'success', to: 'samueloluwade.devops@gmail.com'
+  //   }
+  //   failure
+  //   {
+  //     emailext body: '''
+  //     Build failed. Please resolve issues.
 
-      Thanks
-      Samuel''', recipientProviders: [buildUser(), developers()], subject: 'failure', to: 'samueloluwade.devops@gmail.com'
-    }
-  }
+  //     Thanks
+  //     Samuel''', recipientProviders: [buildUser(), developers()], subject: 'failure', to: 'samueloluwade.devops@gmail.com'
+  //   }
+  // }
 }
