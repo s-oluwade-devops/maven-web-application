@@ -56,7 +56,7 @@ pipeline
         stage('5.ScanImage') {
             steps {
                 sh 'Scanning image'
-                sh 'docker scan bluesamuel/maven-web-app:qa'
+                // sh 'docker scout quickview bluesamuel/maven-web-app:qa'
             }
         }
         stage('UpLoadQAImage') {
