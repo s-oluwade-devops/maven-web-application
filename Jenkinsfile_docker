@@ -66,10 +66,12 @@ pipeline
             }
         }
         stage('6.ManualApproval') {
-            sh " echo 'Please review & approve' "
-            timeout(time:300, unit:'MINUTES')
-            {
-                input message: 'Application ready for deployment, Please review and approve'
+            steps {
+                sh " echo 'Please review & approve' "
+                timeout(time:300, unit:'MINUTES')
+                {
+                    input message: 'Application ready for deployment, Please review and approve'
+                }
             }
         }
         stage('UnDeploy') {
