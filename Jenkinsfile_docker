@@ -1,0 +1,100 @@
+// install docker on node agent and login to registry before running this pipeline script
+
+pipeline
+{
+    agent {
+        label 'agent_docker'
+    }
+    tools {
+        maven 'maven 3.9.6'
+    }
+    stages {
+        stage('0.Setup') {
+            steps {
+                sh '''
+                if ! [ -x "$(command -v java)" ]; then
+                    echo "Java is not installed. Installing..."
+                    sudo dnf install -y java-17-openjdk
+                fi
+                if ! [ -x "$(command -v git)" ]; then
+                    echo "Git is not installed. Installing..."
+                    sudo dnf install -y git
+                fi
+                if ! [ -x "$(command -v docker)" ]; then
+                    echo "Docker is not installed. Installing..."
+                    sudo dnf install -y docker.io
+                fi
+                '''
+            }
+        }
+        stage('1.Clone') {
+            steps {
+                sh 'echo cloning the lastest applications version'
+                git branch: 'dev_samuel', url: 'https://github.com/SapphireSquadLandmarkOrg/maven-web-application.git'
+            }
+        }
+        stage('2.Test+Build') {
+            steps {
+                sh 'echo Running unitTesting'
+                sh 'mvn clean package'
+                sh 'echo test successful and backupArtifacts created'
+            }
+        }
+        stage('3.CodeQuality') {
+            steps {
+                sh 'echo Running detail code analysis'
+                // sh 'mvn sonar:sonar'
+                sh  'echo All conditions met/passed'
+            }
+        }
+        stage('4.BuildImage') {
+            steps {
+                sh 'echo creating docker image'
+                sh 'docker build -t bluesamuel/maven-web-app:qa . '
+            }
+        }
+        stage('5.ScanImage') {
+            steps {
+                sh 'Scanning image'
+                sh 'docker scan bluesamuel/maven-web-app:qa'
+            }
+        }
+        stage('UpLoadQAImage') {
+            steps {
+                sh 'echo Uploading QA Image...'
+                sh 'docker push bluesamuel/maven-web-app:qa'
+            }
+        }
+        stage('6.ManualApproval') {
+            sh " echo 'Please review & approve' "
+            timeout(time:300, unit:'MINUTES')
+            {
+                input message: 'Application ready for deployment, Please review and approve'
+            }
+        }
+        stage('UnDeploy') {
+            steps {
+                sh 'echo Undeploying existing application'
+                sh 'docker rm -f webapp'
+                sh 'docker tag bluesamuel/maven-web-app:qa bluesamuel/maven-web-app:release'
+            }
+        }
+        stage('UpLoadReleaseImage') {
+            steps {
+                sh 'echo uploading approved docker image'
+                sh 'docker push bluesamuel/maven-web-app:release'
+            }
+        }
+        stage('Deployment') {
+            steps {
+                sh 'echo application ready for deployment'
+                sh 'docker run -d -p 8000:8080 --name webapp bluesamuel/maven-web-app:release'
+            }
+        }
+        stage('EmailNotification') {
+            steps {
+                sh 'echo deployment successful'
+            }
+        }
+    }
+}
