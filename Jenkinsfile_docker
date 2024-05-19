@@ -77,7 +77,7 @@ pipeline
         stage('UnDeploy') {
             steps {
                 sh 'echo Undeploying existing application'
-                sh 'docker rm -f webapp'
+                sh 'docker rm -f mavenwebapp'
                 sh 'docker tag bluesamuel/maven-web-app:qa bluesamuel/maven-web-app:release'
             }
         }
@@ -90,7 +90,7 @@ pipeline
         stage('Deployment') {
             steps {
                 sh 'echo application ready for deployment'
-                sh 'docker run -d -p 8000:8080 --name webapp bluesamuel/maven-web-app:release'
+                sh 'docker run -d -p 8000:8080 --name mavenwebapp bluesamuel/maven-web-app:release'
             }
         }
         stage('EmailNotification') {
